@@ -13,6 +13,7 @@ import java.net.URL;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import raven.popup.GlassPanePopup;
 import raven.toast.Notifications;
 
@@ -23,7 +24,7 @@ import raven.toast.Notifications;
 public final class MainFrame extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger(MainFrame.class.getName());
-
+    
     /**
      * Creates new form MainForm
      */
@@ -55,7 +56,7 @@ public final class MainFrame extends javax.swing.JFrame {
     
     public void setView(JPanel panel) {
         MainPanel.removeAll();
-        MainPanel.add(panel, BorderLayout.CENTER);
+        MainPanel.add(panel);
         MainPanel.revalidate();
         MainPanel.repaint();
     }
@@ -71,8 +72,13 @@ public final class MainFrame extends javax.swing.JFrame {
 
         MainPanel = new javax.swing.JPanel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Peso Track");
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         MainPanel.setBackground(new java.awt.Color(153, 153, 153));
         MainPanel.setToolTipText("");
@@ -106,6 +112,27 @@ public final class MainFrame extends javax.swing.JFrame {
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        int confirm = JOptionPane.showConfirmDialog(
+            this,
+            "Are you sure you want to log out?",
+            "Confirm Logout",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.QUESTION_MESSAGE
+        );
+        
+        if (confirm != JOptionPane.YES_OPTION) {
+            return;
+        }
+        
+        Session.logout();
+        
+        MainFrame mainFrame = (MainFrame) SwingUtilities.getWindowAncestor(this);
+        if (mainFrame != null) {
+            mainFrame.setView(new AuthPanel());
+        }
+    }//GEN-LAST:event_formWindowClosing
     
     /**
      * @param args the command line arguments
@@ -117,7 +144,7 @@ public final class MainFrame extends javax.swing.JFrame {
         if (!DatabaseConnection.testConnection()) {
             JOptionPane.showMessageDialog(
                     null,
-                    "<html><b>Cannot connect to the database</b><br>"
+                    "<html><b>Cannot connect to the database</b><br><br>"
                             + "Please check:<br>"
                             + " * If MySQL is running <br>"
                             + " * If database <b>peso_track</b> exists<br>"

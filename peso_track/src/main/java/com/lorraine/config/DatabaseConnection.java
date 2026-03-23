@@ -21,7 +21,7 @@ public class DatabaseConnection {
     private static final String DB_URL = "jdbc:mysql://localhost:3306/peso_track"
              + "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Manila";
     private static final String DB_USER = "root";
-    private static final String DB_PASSWORD = "passworzd";
+    private static final String DB_PASSWORD = "password";
     
     public static Connection getConnection() throws SQLException {
         try{
